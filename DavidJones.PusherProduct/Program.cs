@@ -27,21 +27,41 @@ var httpClientWebSite = new HttpClient(); ///api/v1/accounting/bulk-update-price
 httpClientWebSite.BaseAddress = new Uri("https://davidjonesparis.ir/api/v1/");
 httpClientWebSite.DefaultRequestHeaders.Add("X-API-KEY", "h%q#e6m8s1");
 
-var services = new UpdateService();
-//update quantity on hand from bill api
-//await services.PullUpdateQuantityOnHand(dbService, httpClientBill);
-//Console.WriteLine("process update from bill api completed ");
-//await services.PushUpdateQuantityOnHand(dbService, httpClientWebSite);
-//Console.WriteLine("pushing to quantityOnhand completed");
+var services = new UpdateQohPriceService();
+//var services = new UpdateProductService();
+//var services = new SiteCreateProductService();
+//var services = new SiteGetAllProductsService();
+
+//await services.GetAllForSyncWithPushed(dbService, httpClientWebSite);
+
+//await services.FetchProductsFromFileAsBillToSite("E:\\productSyncerDavidJons\\Docs\\productCodes\\importProduct2.txt" //"E:/productSyncerDavidJons/Docs/productCodes/import-products-from-1-to-50-and-perfumes.txt" ///"E:\\productSyncerDavidJons\\Docs\\productCodes\\davidJonsProductCode_1.txt"
+//    , dbService
+//    , httpClientBill
+//    , httpClientWebSite);
+
+//await services.PullThenPushColor(dbService, httpClientWebSite);
+
+
+
+//Console.WriteLine("start updating product colors to web site");
+//await services.PullThenPushColor(dbService, httpClientWebSite);
+//Console.WriteLine("updating products colors to web site completed");
+
+
+////update quantity on hand from bill api
+await services.PullUpdateQuantityOnHand(dbService, httpClientBill);
+Console.WriteLine("process update from bill api completed ");
+await services.PushUpdateQuantityOnHand(dbService, httpClientWebSite);
+Console.WriteLine("pushing to quantityOnhand completed");
 //////////////////////////////////////////////
 
 
 // update price from bill api
-await services.PullUpdatePrice(dbService, httpClientBill);
-Console.WriteLine("process update price from bill api completed ");
+//await services.PullUpdatePrice(dbService, httpClientBill);
+//Console.WriteLine("process update price from bill api completed ");
 
-await services.PushUpdatePrice(dbService, httpClientWebSite);
-Console.WriteLine("pushing to price completed");
+//await services.PushUpdatePrice(dbService, httpClientWebSite);
+//Console.WriteLine("pushing to price completed");
 
 
 

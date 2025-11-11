@@ -1,6 +1,6 @@
 ﻿using DavidJones.Core.Models.DapperDriver;
 using DavidJones.Core.Models.ProductPusher;
-using DavidJones.Core.Models.UpdateVariants;
+using DavidJones.Core.Models.UpdateQohPrice;
 using DavidJones.ProductSyncer.Helpers.services;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,9 @@ using System.Threading.Tasks;
 
 namespace DavidJones.Core.Services.Business;
 
-public class UpdateService
+public class UpdateQohPriceService
 {
+    #region update prices pull and push 
     public async Task PullUpdatePrice(IDapperDriver dbservice, HttpClient httpClient)
     {
         var itemInqResult = await dbservice.QueryAsync<object, ItemQuantityOnHandDto>(new { }, new SpOptions("[dbo].[S_ProductVariant_QuantityOnHand]"));
@@ -29,7 +30,7 @@ public class UpdateService
 
             var dbResult = await dbservice.ExecuteAsync<object>(new
             {
-                JsonItemPrices = value?.ToString() 
+                JsonItemPrices = value?.ToString()
 
             }, new SpOptions("[dbo].[S_ProductVariant_Price_Insert]"));
 
@@ -99,6 +100,7 @@ public class UpdateService
             Console.WriteLine($"error occurred during pushing quantity on hand to website : {ex.Message}");
         }
     }
+    #endregion
 
     #region quantity on hand pull and push 
     public async Task PullUpdateQuantityOnHand(IDapperDriver dbservice, HttpClient httpClient) //update price and quantity On hand 
@@ -189,21 +191,3 @@ public class UpdateService
     #endregion
 }
 
-
-//JsonNode.Parse(
-//               JsonSerializer.Serialize(reqDto)
-//                    ).ToJsonString());
-//var listQuantity = await dbservice.QueryAsync<object, ItemQuantityOnHandDto>(new { }, new SpOptions("[dbo].[S_Push_QuantityOnHand_tosite]"));
-
-//string urlpushtosite = $"barcodeqoh?count=100&itembarcode={item.ItemBarcode}";
-//var response = await httpClient.GetAsync(urlpushtosite);
-//var content = await response.Content.ReadAsStringAsync();
-//var node = JsonNode.Parse(content);
-//var value = node?["Value"];
-////var table = value?.Deserialize<object>();
-
-//var dbResult = await dbservice.ExecuteAsync<object>(new
-//{
-//    JsonItemQuantityOnHands = value?.ToString() //JsonSerializer.Serialize(table),
-
-//}, new SpOptions("[dbo].[S_ProductVariant_QuantityOnHand_Insert]"));

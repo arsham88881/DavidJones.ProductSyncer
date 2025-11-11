@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DavidJones.Core.Models.UpdateVariants;
+namespace DavidJones.Core.Models.UpdateQohPrice;
 
 public class SiteBulkUpdateReqDto<T>
 {
