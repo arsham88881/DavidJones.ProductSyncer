@@ -45,7 +45,7 @@ public class UpdateProductService
                     name = "رنگ",
                     value = new VariantColorDto { value = x.ColorNamePersian, extra = x.ColorExtraCode, fieldType = "color" }
                 };
-                return new ProdcutVariantItemDto { id = x.SiteVariantId, attributes = [attributeColor] };
+                return new ProdcutVariantItemDto { id = x.SiteVariantId, is_stock_managed = true, attributes = [attributeColor] };
             });
             prdItem.ProductId = product.ProductId;
             prdItem.product = prd;

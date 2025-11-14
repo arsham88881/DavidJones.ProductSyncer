@@ -30,6 +30,8 @@ public class ProductAttributeItemDto
 
 public class ProdcutVariantItemDto
 {
+    public int min_order_count { get; set; } = 1;
+    public bool is_stock_managed { get; set; }
     public required long id { get; set; }
     public ProductVariantAttributeItemDto[]? attributes { get; set; }
 

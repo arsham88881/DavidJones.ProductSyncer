@@ -110,7 +110,9 @@ public class UpdateQohPriceService
 
         foreach (var item in itemInqResult.Value ?? [])
         {
-            string urlGetItemBycode = $"barcodeqoh?count=100&itembarcode={item.ItemBarcode}";
+            //string urlGetItemBycode = $"barcodeqoh?count=100&itembarcode={item.ItemBarcode}";
+            string urlGetItemBycode = $"quantityonhand?itemid={item.ItemId}"; //lastdate={item.LastUpdate}
+
             var response = await httpClient.GetAsync(urlGetItemBycode);
             var content = await response.Content.ReadAsStringAsync();
             var node = JsonNode.Parse(content);
@@ -123,7 +125,7 @@ public class UpdateQohPriceService
 
             }, new SpOptions("[dbo].[S_ProductVariant_QuantityOnHand_Insert]"));
 
-            Console.WriteLine($"product Variant images successfully with id : {item.ItemBarcode}");
+            Console.WriteLine($"product quantity update successfully with id : {item.ItemId} ");
         }
         Console.WriteLine("completed process ");
     }
@@ -154,32 +156,42 @@ public class UpdateQohPriceService
                     pageEndIndex = (int)Math.Ceiling((double)totalCount / pageSize);
                 }
 
-                var reqDto = new SiteBulkUpdateReqDto<ItemQuantityDto>();
-                reqDto.variants = resultListQuantity.Value?.ToList() ?? [];
+                //var reqDto = new SiteBulkUpdateReqDto<ItemQuantityDto>();
+                //reqDto.variants = resultListQuantity.Value?.ToList() ?? [];
 
-                if (reqDto.variants.Count == 0)
+                var list = resultListQuantity.Value?.ToList() ?? [];
+
+                if (list.Count == 0)
                     break;
 
-                //sending to david joes site 
-                string urlpushtosite = $"accounting/bulk-update-stock";
-                HttpContent httpContent = new StringContent(JsonSerializer.Serialize(reqDto), Encoding.UTF8, "application/json");
-                var response = await httpClient.PutAsync(urlpushtosite, httpContent);
-                var content = await response.Content.ReadAsStringAsync();
-                var node = JsonNode.Parse(content);
-                var value = node.Deserialize<SiteBulkUpdateResDto>();
-
-                if (value is null)
-                    throw new Exception("response from website is null");
-
-                if (value.failed_variant_ids is not null)
+                foreach (var variant in list)
                 {
-                    var logResult = await dbservice.ExecuteAsync<object>(new
-                    {
-                        JsonFailedVariantIds = JsonSerializer.Serialize(value.failed_variant_ids),
-                        FlagDescription = "push-update-stock"
-                    }, new SpOptions("[dbo].[S_Log_FailedVariantIds_Insert]"));
+                    string urlpushSignelToSite = $"accounting/update-stock/{variant.id}";
+                    var q = new SiteUpdateQuatityReqDto { is_stock_manager = true, stock_number = variant.stock };
+                    HttpContent httpContent = new StringContent(JsonSerializer.Serialize(q), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PutAsync(urlpushSignelToSite, httpContent);
+                    var content = await response.Content.ReadAsStringAsync();
 
+                    await Task.Delay(1000);
                 }
+
+                ////sending to david joes site 
+                ////string urlpushtosite = $"accounting/bulk-update-stock";
+                //HttpContent httpContent = new StringContent(JsonSerializer.Serialize(reqDto), Encoding.UTF8, "application/json");
+                //var response = await httpClient.PutAsync(urlpushtosite, httpContent);
+                //var content = await response.Content.ReadAsStringAsync();
+                //var node = JsonNode.Parse(content);
+                //var value = node.Deserialize<SiteBulkUpdateResDto>();
+                //if (value is null)
+                //    throw new Exception("response from website is null");
+                //if (value.failed_variant_ids is not null)
+                //{
+                //    var logResult = await dbservice.ExecuteAsync<object>(new
+                //    {
+                //        JsonFailedVariantIds = JsonSerializer.Serialize(value.failed_variant_ids),
+                //        FlagDescription = "push-update-stock"
+                //    }, new SpOptions("[dbo].[S_Log_FailedVariantIds_Insert]"));
+                //}
                 pageIndex++;
             } while (pageIndex <= pageEndIndex);
         }

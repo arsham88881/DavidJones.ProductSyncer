@@ -51,6 +51,7 @@ var services = new UpdateQohPriceService();
 ////update quantity on hand from bill api
 await services.PullUpdateQuantityOnHand(dbService, httpClientBill);
 Console.WriteLine("process update from bill api completed ");
+Console.WriteLine("pushing to quantityOnhand started");
 await services.PushUpdateQuantityOnHand(dbService, httpClientWebSite);
 Console.WriteLine("pushing to quantityOnhand completed");
 //////////////////////////////////////////////
